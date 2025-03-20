@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: stock-market-service
     ports:
-      - "8084:8084"
+      - "8085:8085"
     depends_on:
       - postgres
     environment:

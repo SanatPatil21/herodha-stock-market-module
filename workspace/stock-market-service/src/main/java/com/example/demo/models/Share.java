@@ -1,5 +1,9 @@
 package com.example.demo.models;
 
+import java.util.List;
+
+import org.springframework.scheduling.annotation.Scheduled;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Entity;
@@ -28,6 +32,19 @@ public class Share {
 
     @Transient // This field is not stored in the database
     private double currentPrice;
+    
+//    @Scheduled(fixedRate = 1000)  
+//    public void updateSharePrices() {
+//        List<Share> shares = shareRepository.findAll();
+//
+//        for (Share share : shares) {
+//            share.updateCurrentPrice();  
+//            shareRepository.save(share);  
+//        }
+//        
+//        System.out.println("Stock prices updated...");
+//    }
+//}
 
     // Constructors
     public Share() {

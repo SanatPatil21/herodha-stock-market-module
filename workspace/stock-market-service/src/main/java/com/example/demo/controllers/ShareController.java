@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.models.PurchaseBody;
 import com.example.demo.models.Share;
 import com.example.demo.services.ShareService;
 
@@ -53,6 +54,53 @@ public class ShareController {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Share not found with ID: " + share.getId());
 	    }
 	}
+	
+	@PutMapping("/purchase")
+	public ResponseEntity<?> updateShareQuantity(@RequestBody PurchaseBody purchaseBody){
+		Long stockId = purchaseBody.getStockId();
+        int purchaseQuantity = purchaseBody.getPurchaseQuantity();
+        
+        Optional<Share> share = shareService.getShareById(stockId);
+        
+        if(share.isEmpty()) {
+        	return ResponseEntity.status(HttpStatus.OK).body("Share not found with ID: " + stockId);
+        }
+        
+        if(share.get().getQuantity()<purchaseQuantity) {
+        	return ResponseEntity.status(HttpStatus.OK).body("Not enough Shares of Stock ID: " + stockId);
+        }
+        
+        share.get().setQuantity(share.get().getQuantity()-purchaseQuantity);
+        
+        System.out.println(share.get());
+        
+        return ResponseEntity.ok(shareService.updateShare(share.get()));
+        
+	}
+	
+	
+	@PutMapping("/sell")
+	public ResponseEntity<?> increaseShareQuantity(@RequestBody PurchaseBody purchaseBody){
+		Long stockId = purchaseBody.getStockId();
+        int purchaseQuantity = purchaseBody.getPurchaseQuantity();
+        
+        Optional<Share> share = shareService.getShareById(stockId);
+        
+        if(share.isEmpty()) {
+        	return ResponseEntity.status(HttpStatus.OK).body("Share not found with ID: " + stockId);
+        }
+        
+        
+        share.get().setQuantity(share.get().getQuantity()+purchaseQuantity);
+        
+        System.out.println(share.get());
+        
+        return ResponseEntity.ok(shareService.updateShare(share.get()));
+        
+	}
+	
+	
+	
 	
 	
 
