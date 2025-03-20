@@ -1,0 +1,19 @@
+package com.example.demo.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.models.Share;
+import com.example.demo.repositories.ShareRepo;
+
+@Service
+public class ShareService {
+
+	@Autowired
+	private ShareRepo shareRepo;
+	
+	public Long addShare(Share share) {
+		Share savedShare = shareRepo.save(share);
+		return 
+	}
+}

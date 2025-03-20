@@ -1,0 +1,40 @@
+package com.example.demo.services;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.models.Share;
+import com.example.demo.repositories.ShareRepo;
+
+@Service
+public class ShareService {
+
+	@Autowired
+	private ShareRepo shareRepo;
+	
+	public Share addShare(Share share) {
+		return shareRepo.save(share);
+		 
+	}
+	
+	public List<Share> getAllShares(){
+		return shareRepo.findAll();
+	}
+	
+	public void deleteShareById(Long id) {
+		shareRepo.deleteById(id);
+	}
+	
+	
+	public Share updateShare(Share share) {
+	    // Check if the share exists before updating
+	    if (shareRepo.existsById(share.getStockId())) {
+	        return shareRepo.save(share);  // Update if exists
+	    } else {
+	        return null;  // Return null if share is not found
+	    }
+	}
+
+}

@@ -1,0 +1,99 @@
+package com.example.demo.models;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
+@Entity
+@Table(name = "shares")
+public class Share {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String name;
+
+    @Column(nullable = false)
+    private int quantity;
+
+    @Column(nullable = false)
+    private double priceMin;
+
+    @Column(nullable = false)
+    private double priceMax;
+
+    @Transient // This field is not stored in the database
+    private double currentPrice;
+
+    // Constructors
+    public Share() {
+    }
+
+    public Share(String name, int quantity, double priceMin, double priceMax) {
+        this.name = name;
+        this.quantity = quantity;
+        this.priceMin = priceMin;
+        this.priceMax = priceMax;
+        this.currentPrice = priceMin; // Initialize with min price
+    }
+
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public double getPriceMin() {
+        return priceMin;
+    }
+
+    public void setPriceMin(double priceMin) {
+        this.priceMin = priceMin;
+    }
+
+    public double getPriceMax() {
+        return priceMax;
+    }
+
+    public void setPriceMax(double priceMax) {
+        this.priceMax = priceMax;
+    }
+
+    public double getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(double currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
+    // Utility method to update price within range
+    public void updateCurrentPrice() {
+        this.currentPrice = priceMin + Math.random() * (priceMax - priceMin);
+    }
+}
