@@ -71,7 +71,7 @@ public class ShareController {
         }
         
         share.get().setQuantity(share.get().getQuantity()-purchaseQuantity);
-        
+        	
         System.out.println(share.get());
         
         return ResponseEntity.ok(shareService.updateShare(share.get()));

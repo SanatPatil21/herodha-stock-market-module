@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.util.Random;
 
 @Entity
 @Table(name = "shares")
@@ -30,21 +31,9 @@ public class Share {
 
     private double priceMax;
 
-    @Transient // This field is not stored in the database
+    @Transient 
     private double currentPrice;
     
-//    @Scheduled(fixedRate = 1000)  
-//    public void updateSharePrices() {
-//        List<Share> shares = shareRepository.findAll();
-//
-//        for (Share share : shares) {
-//            share.updateCurrentPrice();  
-//            shareRepository.save(share);  
-//        }
-//        
-//        System.out.println("Stock prices updated...");
-//    }
-//}
 
     // Constructors
     public Share() {
@@ -107,9 +96,68 @@ public class Share {
     public void setCurrentPrice(double currentPrice) {
         this.currentPrice = currentPrice;
     }
-
-    // Utility method to update price within range
-    public void updateCurrentPrice() {
-        this.currentPrice = priceMin + Math.random() * (priceMax - priceMin);
+    
+    @Override
+    public String toString() {
+        return "Share{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", quantity=" + quantity +
+                ", priceMin=" + priceMin +
+                ", priceMax=" + priceMax +
+                ", currentPrice=" + currentPrice +
+                '}';
     }
+
+    
+    
+
+    
+  
+
+    public void updateCurrentPrice() {
+        Random random = new Random();
+        double fluctuationPercentage;
+
+       
+        if (random.nextDouble() < 0.05) {  
+            fluctuationPercentage = 0.10 + random.nextDouble() * 0.05; 
+        } else {
+        	
+            fluctuationPercentage = 0.003 + random.nextDouble() * 0.012; 
+        }
+
+        double change = currentPrice * fluctuationPercentage;
+
+        // 70% chance that joh hai wahi continue hoga
+        if (random.nextDouble() < 0.7) {
+            // Continue previous trend
+            if (random.nextBoolean()) {
+                this.currentPrice = Math.min(priceMax, currentPrice + change); 
+            } else {
+                this.currentPrice = Math.max(priceMin, currentPrice - change);
+            }
+        } else {
+            //30% chance ulta hoga
+            if (random.nextBoolean()) {
+                this.currentPrice = Math.max(priceMin, currentPrice - change); 
+            } else {
+                this.currentPrice = Math.min(priceMax, currentPrice + change);
+            }
+        }
+
+       
+        this.currentPrice = Math.max(priceMin, Math.min(priceMax, this.currentPrice));
+
+        //Sudden Dips or rise
+        if (random.nextDouble() < 0.01) {
+            double correctionFactor = 0.05 + random.nextDouble() * 0.10; 
+            if (random.nextBoolean()) {
+                this.currentPrice = Math.min(priceMax, currentPrice * (1 + correctionFactor));
+            } else {
+                this.currentPrice = Math.max(priceMin, currentPrice * (1 - correctionFactor));
+            }
+        }
+    }
+
 }
