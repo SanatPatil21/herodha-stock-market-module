@@ -35,7 +35,7 @@ public class Share {
     private double currentPrice;
     
 
-    // Constructors
+    // Constructors 
     public Share() {
     }
 

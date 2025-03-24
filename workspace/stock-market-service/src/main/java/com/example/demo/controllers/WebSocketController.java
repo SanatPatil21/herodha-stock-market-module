@@ -27,11 +27,5 @@ public class WebSocketController {
         return priceUpdateService.getSharesWithUpdatedPrices();
     }
     
-    
-    @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
-    public String greeting(String message) throws Exception {
-      Thread.sleep(1000); 
-      return message;
-    }
+   
 }
