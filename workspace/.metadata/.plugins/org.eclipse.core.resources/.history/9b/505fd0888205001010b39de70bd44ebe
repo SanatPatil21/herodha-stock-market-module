@@ -1,8 +1,0 @@
-package com.example.demo.models;
-
-public class PurchaseBody {
-	
-	private Long stockId;  
-    private int purchaseQuantity;
-
-}
