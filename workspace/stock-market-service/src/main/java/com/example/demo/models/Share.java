@@ -34,6 +34,22 @@ public class Share {
     @Transient 
     private double currentPrice;
     
+    //Candles
+    @Transient
+    private double openPrice;
+
+    @Transient
+    private double highPrice;
+
+    @Transient
+    private double lowPrice;
+
+    @Transient
+    private double closePrice;
+
+    @Transient
+    private boolean isNewCandle = true; // To check if a new period starts
+    
 
     // Constructors 
     public Share() {
@@ -97,23 +113,40 @@ public class Share {
         this.currentPrice = currentPrice;
     }
     
+    
+    
     @Override
-    public String toString() {
-        return "Share{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", quantity=" + quantity +
-                ", priceMin=" + priceMin +
-                ", priceMax=" + priceMax +
-                ", currentPrice=" + currentPrice +
-                '}';
+	public String toString() {
+		return "Share [id=" + id + ", name=" + name + ", quantity=" + quantity + ", priceMin=" + priceMin
+				+ ", priceMax=" + priceMax + ", currentPrice=" + currentPrice + ", openPrice=" + openPrice
+				+ ", highPrice=" + highPrice + ", lowPrice=" + lowPrice + ", closePrice=" + closePrice
+				+ ", isNewCandle=" + isNewCandle + "]";
+	}
+
+	//Initializing Candles
+    public void initializeCandle() {
+        this.openPrice = this.currentPrice;
+        this.highPrice = this.currentPrice;
+        this.lowPrice = this.currentPrice;
+        this.closePrice = this.currentPrice;
+        this.isNewCandle = false;
+    }
+    
+    public void updateCandle() {
+    	//Start a new Candle for a new Periods
+        if (isNewCandle) {
+            initializeCandle(); 
+//            this.isNewCandle = false;
+        }
+
+        this.highPrice = Math.max(this.highPrice, this.currentPrice);
+        this.lowPrice = Math.min(this.lowPrice, this.currentPrice);
+
+        this.closePrice = this.currentPrice;
     }
 
-    
-    
 
-    
-  
+
 
     public void updateCurrentPrice() {
         Random random = new Random();
@@ -158,6 +191,50 @@ public class Share {
                 this.currentPrice = Math.max(priceMin, currentPrice * (1 - correctionFactor));
             }
         }
+        
+        updateCandle();
     }
+    
+    //GETTERS SETTERS
+
+	public double getOpenPrice() {
+		return openPrice;
+	}
+
+	public void setOpenPrice(double openPrice) {
+		this.openPrice = openPrice;
+	}
+
+	public double getHighPrice() {
+		return highPrice;
+	}
+
+	public void setHighPrice(double highPrice) {
+		this.highPrice = highPrice;
+	}
+
+	public double getLowPrice() {
+		return lowPrice;
+	}
+
+	public void setLowPrice(double lowPrice) {
+		this.lowPrice = lowPrice;
+	}
+
+	public double getClosePrice() {
+		return closePrice;
+	}
+
+	public void setClosePrice(double closePrice) {
+		this.closePrice = closePrice;
+	}
+
+	public boolean isNewCandle() {
+		return isNewCandle;
+	}
+
+	public void setNewCandle(boolean isNewCandle) {
+		this.isNewCandle = isNewCandle;
+	}
 
 }

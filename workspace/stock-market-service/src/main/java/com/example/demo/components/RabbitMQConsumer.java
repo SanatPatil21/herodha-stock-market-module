@@ -1,8 +1,7 @@
 package com.example.demo.components;
 
 import java.time.LocalTime;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +12,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.config.RabbitMQConfig;
-import com.example.demo.models.PriceRecord;
+import com.example.demo.models.Candle;
 import com.example.demo.models.Share;
 
 @Component
@@ -28,6 +27,10 @@ public class RabbitMQConsumer {
     private List<Share> sharesCache;
     
     private transient Map<String, LinkedList<Map<String, Object>>> priceHistoryCache = new HashMap<>();
+    
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    
+    
     
     
     @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME)
@@ -55,6 +58,7 @@ public class RabbitMQConsumer {
         Map<String, Object> priceEntry = new HashMap<>();
         priceEntry.put("stockName", stockName);
         priceEntry.put("price", share.getCurrentPrice());
+        priceEntry.put("timestamp",LocalTime.now().format(formatter));
 
         LinkedList<Map<String, Object>> priceList = priceHistoryCache.computeIfAbsent(stockName, k -> new LinkedList<>());
         priceList.add(priceEntry);

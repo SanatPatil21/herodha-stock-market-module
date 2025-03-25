@@ -27,5 +27,14 @@ public class WebSocketController {
         return priceUpdateService.getSharesWithUpdatedPrices();
     }
     
+    
+    @MessageMapping("/getCandleSticks")
+    @SendTo("/topic/intraday")
+    public Share sendCandleSticks(String stockName){
+    	System.out.println("Received stock name: " + stockName);
+    	Share share = priceUpdateService.getCandleSticks(stockName);
+    	System.out.println(share);
+    	return share;
+    }
    
 }

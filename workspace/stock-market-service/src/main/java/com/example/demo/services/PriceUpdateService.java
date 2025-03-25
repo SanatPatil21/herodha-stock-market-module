@@ -29,8 +29,14 @@ public class PriceUpdateService {
 	}
 
 	public void loadShares() {
-        sharesCache = shareRepository.findAll();
-    }
+	    try {
+	        sharesCache = shareRepository.findAll();
+	    } catch (Exception e) {
+	        System.err.println("Error loading shares from DB: " + e.getMessage());
+	        sharesCache = List.of(); 
+	    }
+	}
+
 	
 	//getAllShares from DB
 	@jakarta.annotation.PostConstruct
@@ -44,9 +50,8 @@ public class PriceUpdateService {
         if (sharesCache != null) {
             for (Share share : sharesCache) {
                 share.updateCurrentPrice(); 
+                share.updateCandle();
             }
-            // Publishing 
-            //messagingTemplate.convertAndSend("/topic/prices", sharesCache);
             rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, "routing.key.#", sharesCache);
         }
     }
@@ -54,4 +59,53 @@ public class PriceUpdateService {
     public List<Share> getSharesWithUpdatedPrices() {
         return sharesCache;
     }
+    
+//    @Scheduled(fixedRate = 60000) 
+//    public void resetCandles() {
+//        if (sharesCache != null) {
+//            for (Share share : sharesCache) {
+//                share.initializeCandle(); 
+//            }
+//            System.out.println("Candle Reset and New Period Started");
+//        }
+//    }
+    
+    
+    @Scheduled(fixedRate = 60000) 
+    public void resetCandlePeriod() {
+        if (sharesCache != null) {
+            for (Share share : sharesCache) {
+                share.setNewCandle(true);
+                share.initializeCandle(); 
+            }
+            System.out.println("Candle Reset and New Period Started");
+        }
+    }
+
+    
+    @Scheduled(fixedRate = 1000) 
+    public void updateCandles() {
+        if (sharesCache != null) {
+            for (Share share : sharesCache) {
+                share.updateCandle();
+            }
+        }
+    }
+
+
+    
+    //Getting the Candle Sticks for a Specific Stock
+    public Share getCandleSticks(String stockName) {
+        for (Share share : sharesCache) {
+            if (share.getName().equalsIgnoreCase(stockName)) {
+                return share;
+            }
+        }
+        Share emptyShare = new Share(stockName, 0, 0.0, 0.0);
+        emptyShare.initializeCandle();
+        return emptyShare;
+    }
+
+    
+    
 }

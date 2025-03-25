@@ -28,7 +28,6 @@ public class ShareService {
 		shareRepo.deleteById(id);
 	}
 	
-	
 	public Share updateShare(Share share) {
 	    if (shareRepo.existsById(share.getId())) {
 	        return shareRepo.save(share); 

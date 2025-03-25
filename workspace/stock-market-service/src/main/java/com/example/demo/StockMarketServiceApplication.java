@@ -9,7 +9,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 @SpringBootApplication
 @EnableScheduling
 @EnableWebSocketMessageBroker
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 public class StockMarketServiceApplication {
 
 	public static void main(String[] args) {
