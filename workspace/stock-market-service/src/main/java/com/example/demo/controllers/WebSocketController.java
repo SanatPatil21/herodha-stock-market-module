@@ -1,12 +1,15 @@
 package com.example.demo.controllers;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.models.Candle;
 import com.example.demo.models.Share;
 import com.example.demo.services.PriceUpdateService;
 
@@ -28,13 +31,10 @@ public class WebSocketController {
     }
     
     
-    @MessageMapping("/getCandleSticks")
+    @MessageMapping("/getCandleData")
     @SendTo("/topic/intraday")
-    public Share sendCandleSticks(String stockName){
-    	System.out.println("Received stock name: " + stockName);
-    	Share share = priceUpdateService.getCandleSticks(stockName);
-    	System.out.println(share);
-    	return share;
+    public Map<Long, LinkedList<Candle>> sendCandleData(Map<Long, LinkedList<Candle>> candleData){
+    	return candleData;
     }
    
 }

@@ -1,10 +1,8 @@
 package com.example.demo.models;
 
+import java.time.LocalDateTime;
+
 public class Candle {
-	
-	private long stockId;
-	
-	private String stockName;
 	
 	private double maxPrice;
 	
@@ -13,6 +11,17 @@ public class Candle {
 	private double openPrice;
 	
 	private double closePrice;
+	
+	private LocalDateTime timestamp;
+
+
+	public LocalDateTime getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(LocalDateTime timestamp) {
+		this.timestamp = timestamp;
+	}
 
 	public double getMaxPrice() {
 		return maxPrice;

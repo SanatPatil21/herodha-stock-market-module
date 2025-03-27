@@ -1,18 +1,29 @@
 const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:8084/ws'
+    brokerURL: 'https://localhost:8084/ws'
 });
 
 stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
+	
+	stompClient.subscribe('/topic/intraday',(message)=>{
+		try{
+			const intradata = JSON.parse(message.body);
+			console.log(intradata);
+			
+		}catch(error){
+			console.log(error)
+		}
+	})
 
 
-    stompClient.subscribe('/topic/intraday', (message) => {
+    stompClient.subscribe('/topic/prices', (message) => {
         try {
             const data = JSON.parse(message.body);
             
             const stockData = data.latestPrices;
             const priceHistory = data.priceHistory;
+			/*
 			
 			console.log("Latest Prices: ",stockData)
             console.log("Historical Data:", priceHistory);
@@ -31,7 +42,7 @@ stompClient.onConnect = (frame) => {
                 console.log(priceHistory[stockName])
                 console.log('--------------------------');
             });
-
+			*/
         } catch (error) {
             console.error('Error parsing stock data:', error);
         }

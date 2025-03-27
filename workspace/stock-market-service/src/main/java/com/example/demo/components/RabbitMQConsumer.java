@@ -1,7 +1,9 @@
 package com.example.demo.components;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,18 +32,20 @@ public class RabbitMQConsumer {
     
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     
+    private transient Map<Long,LinkedList<Candle>> candleData = new HashMap<>();
+    
     
     
     
     @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME)
     public void listen(List<Share> sharesCache) {
-    	System.out.println("Recieved Stock Update From Rabbit MQ");
-    	System.out.println(LocalTime.now().toString());
+//    	System.out.println("Recieved Stock Update From Rabbit MQ");
+//    	System.out.println(LocalTime.now().toString());
     	for (Share share : sharesCache) {
-    	    System.out.println(share.toString());
+//    	    System.out.println(share.toString());
     	    updatePriceHistory(share);
     	}
-    	System.out.println("");
+//    	System.out.println("");
 
         this.sharesCache = sharesCache;  
         
@@ -70,5 +74,77 @@ public class RabbitMQConsumer {
         priceHistoryCache.put(stockName, priceList);
     }
 
+    
+    //Listener for candle Data
+    @RabbitListener(queues = RabbitMQConfig.SECOND_QUEUE_NAME)
+    public void listenToSecondQueue(List<Share> sharesCache) {
+    	for(Share share:sharesCache) {
+    		updateCandleData(share);
+    	}
+//    	System.out.println("");
+    	
+    	messagingTemplate.convertAndSend("/topic/intraday", candleData);
+    }
+    
+    private void updateCandleData(Share share) {
+    	Long stockId = share.getId();    	
+    	
+    	LinkedList<Candle> candles = candleData.computeIfAbsent(stockId, k -> new LinkedList<>());
+    	
+    	if(candles.isEmpty()) {
+    		Candle newCandle = createNewCandle(share.getCurrentPrice());
+            candles.add(newCandle);
+    	}else {
+    		Candle lastCandle = candles.getLast();
+    		
+    		if(isNewCandleRequired(lastCandle)) {
+    			System.out.println(LocalTime.now());
+    			System.out.println("New Candle Created");
+    			Candle newCandle = createNewCandle(share.getCurrentPrice());
+                candles.add(newCandle);
+                 
+                 if (candles.size() > 50) {
+                     candles.removeFirst(); 	
+                 }
+    		}else {
+    			updateExistingCandle(lastCandle,share.getCurrentPrice());
+    			
+    		}
+    	}
+    	
+    	candleData.put(stockId, candles);
+    	
+    	
+    }
+    
+    
+    private Candle createNewCandle(double price) {
+        Candle candle = new Candle();
+        candle.setOpenPrice(price);
+        candle.setClosePrice(price);
+        candle.setMinPrice(price);
+        candle.setMaxPrice(price);
+        candle.setTimestamp(LocalDateTime.now());
+        return candle;
+    }
+    
+    private void updateExistingCandle(Candle candle,double price) {
+    	candle.setClosePrice(price);
+    	candle.setMinPrice(Math.min(candle.getMinPrice(), price));
+        candle.setMaxPrice(Math.max(candle.getMaxPrice(), price));
+     // candle.setTimestamp(LocalDateTime.now());
+    }
+    
+    private boolean isNewCandleRequired(Candle lastCandle) {
+    	//New candle every 30 seconds
+    	long minutesElapsed = ChronoUnit.SECONDS.between(lastCandle.getTimestamp(), LocalDateTime.now());
+        return minutesElapsed >= 20;
+    }
+    
+    public Map<Long, LinkedList<Candle>> getCandleData() {
+        return candleData;
+    }
+    
+    
 
 }

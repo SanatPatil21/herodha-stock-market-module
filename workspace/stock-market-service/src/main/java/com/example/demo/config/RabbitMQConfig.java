@@ -16,6 +16,11 @@ public class RabbitMQConfig {
 	public static final String QUEUE_NAME = "myQueue";
     public static final String EXCHANGE_NAME = "myExchange";
     
+
+    public static final String SECOND_QUEUE_NAME = "candleStickQueue";
+    public static final String SECOND_EXCHANGE_NAME = "candleStickExchange";
+    
+    //FIRST QUEUE
     @Bean
     public Queue queue() {
         return new Queue(QUEUE_NAME, false);
@@ -30,8 +35,25 @@ public class RabbitMQConfig {
     public Binding binding(Queue queue, TopicExchange exchange) {
         return BindingBuilder.bind(queue).to(exchange).with("routing.key.#");
     }
-
     
+    //Second Queues
+    @Bean
+    public Queue secondQueue() {
+        return new Queue(SECOND_QUEUE_NAME, false);
+    }
+    
+    @Bean
+    public TopicExchange secondExchange() {
+        return new TopicExchange(SECOND_EXCHANGE_NAME);
+    }
+    
+    
+    @Bean
+    public Binding secondBinding(Queue secondQueue, TopicExchange secondExchange) {
+        return BindingBuilder.bind(secondQueue).to(secondExchange).with("routing.key.#");
+    }
+    
+   //JSON CONVERTER
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
@@ -40,7 +62,7 @@ public class RabbitMQConfig {
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(messageConverter());  // Use JSON converter
+        rabbitTemplate.setMessageConverter(messageConverter());  
         return rabbitTemplate;
     }
 }
