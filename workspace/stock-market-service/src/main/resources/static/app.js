@@ -1,5 +1,6 @@
 const stompClient = new StompJs.Client({
     brokerURL: 'https://localhost:8084/ws'
+	
 });
 
 stompClient.onConnect = (frame) => {
@@ -12,7 +13,7 @@ stompClient.onConnect = (frame) => {
 			console.log(intradata);
 			
 		}catch(error){
-			console.log(error)
+			console.log(error) 
 		}
 	})
 

@@ -23,7 +23,7 @@ public class WebSocketController {
         this.priceUpdateService = priceUpdateService;
     }
 
-    //Yeh map hoga: /app/getPrices	
+    //Yeh map hoga: /topic/prices	
     @MessageMapping("/getPrices")  
     @SendTo("/topic/prices")       
     public List<Share> sendInitialPrices() {
